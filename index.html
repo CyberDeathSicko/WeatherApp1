@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="card">
+    <div class="search">
+        <input type="text" placeholder="enter city name" spellcheck="false" id="city-input">
+        <button id="search-button"><img src="images/search.png" alt="Search"></button>
+    </div>
+    <div class="weather" style="display: none;"> <!-- Initially hidden -->
+        <img src="images/rain.png" class="weather-icon" alt="Weather Icon">
+        <h1 class="temp">22°C</h1>
+        <h2 class="city">New York</h2>
+        <div class="details">
+            <div class="col">
+                <img src="images/humidity.png">
+                <div>
+                    <p class="humidity">50%</p>
+                    <p>Humidity</p>
+                </div>
+            </div>
+            <div class="col">
+                <img src="images/wind.png">
+                <div>
+                    <p class="wind">15 km/h</p>
+                    <p>Wind Speed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const apiKey = "48714c7cda54c90ecb05be166dfd5d9d";
+const apiUrl = "https://api.openweathermap.org/data/2.5/weather";
+
+const cityInput = document.getElementById("city-input");
+const searchButton = document.getElementById("search-button");
+const weatherIcon = document.querySelector(".weather-icon");
+const weatherContainer = document.querySelector(".weather");
+
+async function checkWeather(city){
+    const response = await fetch(`${apiUrl}?q=${city}&appid=${apiKey}&units=metric`);
+    const data = await response.json();
+
+    document.querySelector(".city").textContent = data.name;
+    document.querySelector(".temp").textContent = `${data.main.temp}°C`;
+    document.querySelector(".humidity").textContent = `${data.main.humidity}%`;
+    document.querySelector(".wind").textContent = `${data.wind.speed} km/h`;
+
+    if(data.weather[0].main === "Clouds"){
+        weatherIcon.src = "images/clouds.png";
+    }
+    else if(data.weather[0].main === "Rain"){
+        weatherIcon.src = "images/rain.png";
+    }
+    else if(data.weather[0].main === "Drizzle"){
+        weatherIcon.src = "images/drizzle.png";
+    }
+    else if(data.weather[0].main === "Mist"){
+        weatherIcon.src = "images/mist.png";
+    }
+
+    // Show the weather container
+    weatherContainer.style.display = "block";
+}
+
+searchButton.addEventListener("click", () => {
+    checkWeather(cityInput.value);
+});
+
+// Allow pressing Enter key to trigger the weather search
+cityInput.addEventListener("keyup", (event) => {
+    if (event.key === "Enter") {
+        checkWeather(cityInput.value);
+    }
+});
+
+// You can call checkWeather initially if you want to load weather for a default city
+</script>
+</body>
+</html>
